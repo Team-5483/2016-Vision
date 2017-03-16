@@ -6,7 +6,7 @@ import numpy as np
 import struct
 
 IP='localhost'
-PORT=8012
+PORT=6969
 
 
 def receive_video(_strHOST, _iPORT):
