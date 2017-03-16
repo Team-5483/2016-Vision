@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team5483.robot;
 
+import org.usfirst.frc.team5483.robot.commands.GoToPeg;
 import org.usfirst.frc.team5483.robot.subsystems.BallGrabber;
 import org.usfirst.frc.team5483.robot.subsystems.Chassis;
 import org.usfirst.frc.team5483.robot.subsystems.Climber;
@@ -30,7 +31,7 @@ public class Robot extends IterativeRobot {
 		climber = new Climber();
 		ballGrabber = new BallGrabber();
 		
-		//chooser.addDefault("Default Auto", new ExampleCommand());
+		chooser.addDefault("Default Auto", new GoToPeg());
 		//chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 	}

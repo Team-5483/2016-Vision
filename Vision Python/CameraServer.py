@@ -1,42 +1,35 @@
-import socket
-import sys
 import cv2
-import pickle
 import numpy as np
-import struct
+import socket
+import pickle
+import sys
 
-HOST='localhost'
-PORT=8012
+IP = ""
+PORT = 8012
 
-def WaitAndReceiveVideoStream(_strHOST, _iPORT):
-    u"""
-    Funkcja odbierająca stream z kamery klienta.
+cap=cv2.VideoCapture(0)
+sock=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+if(len(sys.argv) > 1):
+    IP = sys.argv[1]
 
-    """
-    s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-    print('Socket created')
+    while (True):
+        ret, frame = cap.read()
 
-    s.bind((_strHOST,_iPORT))
-    print ('Socket bind complete')
+        if cap.isOpened():
+            frame = cv2.resize(frame, (400,300), interpolation=cv2.INTER_CUBIC)
 
+            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+            result, compress = cv2.imencode('.jpg', frame, encode_param)
 
+            data = np.array(compress)
+            dataToSend = pickle.dumps(data)
 
-    data = ""
-    #payload_size = struct.calcsize("L")
-
-    i = 0
-    while True:
-        data, addr = s.recvfrom(512)
-        frame=pickle.loads(data)
-        i = i + 1
-        #frame = numpy.fromstring(data, dtype=numpy.uint8)
-        #frame = numpy.reshape(frame, (240,320,3))
-        #if 3 == i :
-        #    cv2.SaveImage("C:\\image.",frame)
-        cv2.imshow('frame',frame)
-        cv2.waitKey(4) #Important delay - for test try 2 or 4 value.
-        if cv2.waitKey( 1 ) & 0xFF == ord( 'q' ):
+            sock.sendto(dataToSend, (IP, PORT))
+        else:
+            print("No camera found")
             break
-    s.close( )
+else :
+    print("Give IP")
 
-WaitAndReceiveVideoStream(HOST, PORT)
+cap.release()
+
